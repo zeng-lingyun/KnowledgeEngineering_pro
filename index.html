@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" /> 
+<script src="SPARQLWrapper.js" type="text/javascript"></script>
+</head>
+<body> 
+<script>
+//sparql.setQuery("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX dbo: <http://dbpedia.org/ontology> PREFIX rdfs: <http://www/w3.org/2000/01/rdf-schema#> PREFIX dc: <http://purl.org/dc/elements/1.1/> Select distinct ?birthdate ?thumbnail ?scientist ?name ?description WHERE { ?scientist rdf:type dbo:Sicentist ; rdfs:label ?name ; dc:description ?description FILTER ((lang(?name)='en')&&(lang(?description)='en')&&(STRLEN(STR(?birthdate))>6)&&(SUBSTR(STR(?birthdate),6)=SUBSTR(STR(bif:curdate('')),6))) OPTIONAL {?scientist dbo:thumbnail ?thumbnail} }ORDER BY ?birthdate");
+
+var sparql = new SPARQLWrapper("http://dbpedia.org/sparql");
+sparql.setQuery("PREFIX dbpedia-owl: <http://dbpedia.org/ontology/> SELECT ?p ?c WHERE { ?p a dbpedia-owl:Artist. ?p dbpedia-owl:birthPlace ?c. ?c <http://xmlns.com/foaf/0.1/name> 'York'@en.}")
+
+
+sparql.query(function(json){
+	console.log(json);
+});
+
+</script>
+</body> 
+</html> 

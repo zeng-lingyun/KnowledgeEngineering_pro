@@ -1,0 +1,61 @@
+***语句在http://dbpedia.org/sparql网页中可查询结果***
+***部分表示同一作品但label不同的作品无法在匹配项中得到匹配，如{"Harry Potter and the Philosopher's Stone"@en}（书籍）和{"Harry Potter and the Prisoner of Azkaban (film)"@en}（电影）由于label略有不同而无法匹配***
+
+1.查看所有电影：
+select distinct ?film ?f_name where {
+?film rdf:type dbo:Film;
+      rdfs:label ?f_name.
+filter(lang(?f_name)="en")
+}
+
+2.查看所有图书：
+select distinct ?book ?b_name where {
+?book rdf:type dbo:Book;
+      rdfs:label ?b_name.
+filter(lang(?b_name)="en")
+}
+
+3.查看所有游戏：
+select distinct ?game ?g_name where {
+?game rdf:type dbo:Game;
+      rdfs:label ?g_name.
+filter(lang(?g_name)="en")
+}
+
+4.匹配相同名字的电影和书籍：
+select distinct ?film ?f_name where {
+?film rdf:type dbo:Film;
+      rdfs:label ?f_name.
+?book rdf:type dbo:Book;
+      rdfs:label ?b_name.
+filter((lang(?f_name)="en") && (lang(?b_name)="en") && ((?f_name)=(?b_name)))
+}
+
+5.匹配相同名字的电影和游戏：
+select distinct ?film ?f_name where {
+?film rdf:type dbo:Film;
+      rdfs:label ?f_name.
+?game rdf:type dbo:Game;
+      rdfs:label ?g_name.
+filter((lang(?f_name)="en") && (lang(?g_name)="en") && ((?f_name)=(?g_name)))
+}
+
+6.匹配相同名字的书籍和游戏：
+select distinct ?book ?b_name where {
+?book rdf:type dbo:Book;
+      rdfs:label ?b_name.
+?game rdf:type dbo:Game;
+      rdfs:label ?g_name.
+filter((lang(?b_name)="en") && (lang(?g_name)="en") && ((?b_name)=(?g_name)))
+}
+
+7.匹配相同名字的电影和书籍和游戏：（无匹配项）
+
+8.指定名称查询电影/书籍/游戏：
+select distinct ?book ?b_name where {
+?book rdf:type dbo:Book;
+      rdfs:label ?b_name.
+filter((lang(?b_name)="en") )
+filter regex(?b_name,"Harry Potter") 
+}
+

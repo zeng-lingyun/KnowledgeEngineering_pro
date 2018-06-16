@@ -12,34 +12,51 @@
 	#main{
 		margin-top: 150px;
 	}
-	.opt{height:30px;line-height:24px;float: left;margin-left: 15px}
+	img {
+	    width: 100%;
+	    height: 100%;
+	}
+	.opt{height:30px;line-height:24px;float: left;margin-left: 7px}
    
 </style>
 </head>
 
-<body> 
-	<div id="main">
+<body>
+	<div>
+		<div><img src="banner.jpg"></div>
 		<div class="row">
 		  <div class="col-md-4 col-md-offset-4">
 		    <div class="input-group">
-		      <input type="text" placeholder="仅支持英文输入" class="form-control" aria-label="...">
+		      <input type="text" placeholder="仅支持英文输入" class="form-control" id="searchValue" aria-label="...">
 		      <div class="input-group-btn">
-		        <button type="button" class="btn btn-primary dropdown-toggle">搜索</button>
+		        <button type="button" class="btn btn-primary dropdown-toggle" onclick="search()">搜索</button>
 		      </div><!-- /btn-group -->
 		    </div><!-- /input-group -->
 		    <div style="margin-top: 10px">
 		    	<div class="opt">
-					<input class="magic-checkbox" type="radio" name="layout" id="c1" checked>
+					<input class="magic-checkbox" type="radio" name="layout" value="Film" id="c1" checked="">
 					<label for="c1">电影</label>
 				</div>
 				<div class="opt">
-					<input class="magic-checkbox" type="radio" name="layout" id="c2" >
+					<input class="magic-checkbox" type="radio" name="layout" value="Book" id="c2">
 					<label for="c2">书籍</label>
 				</div>
 				<div class="opt">
-					<input class="magic-checkbox" type="radio" name="layout" id="c3">
+					<input class="magic-checkbox" type="radio" name="layout" value="Game" id="c3">
 					<label for="c3">游戏</label>
-				</div>   
+				</div> 
+				<div class="opt">
+					<input class="magic-checkbox" type="radio" name="layout" id="c4">
+					<label for="c4">电影&游戏</label>
+				</div>
+				<div class="opt">
+					<input class="magic-checkbox" type="radio" name="layout" id="c5">
+					<label for="c5">书籍&游戏</label>
+				</div>
+				<div class="opt">
+					<input class="magic-checkbox" type="radio" name="layout" id="c6">
+					<label for="c6">电影&书籍</label>
+				</div>  
 		    </div>
 		  </div><!-- /.col-lg-6 -->
 		</div><!-- /.row -->
@@ -49,15 +66,29 @@
 	</div>
 	
 <script>
-//sparql.setQuery("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX dbo: <http://dbpedia.org/ontology> PREFIX rdfs: <http://www/w3.org/2000/01/rdf-schema#> PREFIX dc: <http://purl.org/dc/elements/1.1/> Select distinct ?birthdate ?thumbnail ?scientist ?name ?description WHERE { ?scientist rdf:type dbo:Sicentist ; rdfs:label ?name ; dc:description ?description FILTER ((lang(?name)='en')&&(lang(?description)='en')&&(STRLEN(STR(?birthdate))>6)&&(SUBSTR(STR(?birthdate),6)=SUBSTR(STR(bif:curdate('')),6))) OPTIONAL {?scientist dbo:thumbnail ?thumbnail} }ORDER BY ?birthdate");
+
 
 var sparql = new SPARQLWrapper("http://dbpedia.org/sparql");
-//sparql.setQuery("PREFIX dbpedia-owl: <http://dbpedia.org/ontology/> SELECT ?p ?c WHERE { ?p a dbpedia-owl:Artist. ?p dbpedia-owl:birthPlace ?c. ?c <http://xmlns.com/foaf/0.1/name> 'York'@en.}")
-sparql.setQuery("select distinct ?book ?b_name where {?book rdf:type dbo:Book;rdfs:label ?b_name. filter((lang(?b_name)='en') ) filter regex(?b_name,'Harry Potter') }")
 
-sparql.query(function(json){
-	console.log(json);
-});
+
+
+function search(){
+	var searchValue = $("#searchValue").val();
+	if(searchValue == ""||searchValue==null){
+		alert("请输入搜索内容")
+		return;
+	}
+	var type = $("input[name='layout']:checked").val();
+	var value = "'"+searchValue+"'";
+	var sql = "select distinct ?result ?name where { ?result rdf:type dbo:"+type+"; rdfs:label ?name. filter regex(?name, "+value+")} LIMIT 10"
+	sparql.setQuery(sql)
+
+	sparql.query(function(json){
+		console.log(json);
+	});
+}
+
+
 
 </script>
 </body> 

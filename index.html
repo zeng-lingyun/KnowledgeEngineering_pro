@@ -113,6 +113,9 @@ var film = []
 
 function search(){
 	currentPage = 1;
+	game = []
+	book = []
+	film = []
 	$("#none").addClass("hidden");
 	$("#result").addClass("hidden");
 
@@ -163,6 +166,8 @@ function search(){
 }
 function show(film,book,game){
 	$("#loading").addClass("hidden");
+	$("#next").addClass("hidden");
+	$("#previous").addClass("hidden");
 	if(film.length == 0 && book.length == 0 && game.length == 0){
 		$("#none").removeClass("hidden");
 	}else{

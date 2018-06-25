@@ -85,10 +85,26 @@
 				</div>
 				<div id="bing" class="col-md-5 col-md-offset-1  mydiv">
 					<div id="container" style="height:500px">
-						
 					</div>
 				</div>
+				<div id="tuijian" class="col-md-4 col-md-offset-4 hidden">
+					<p>推荐：</p>
+					<div id="loading2" class="col-md-4 col-md-offset-4 hidden">
+						<div class="spinner">
+							<div class="rect1"></div>
+							<div class="rect2"></div>
+							<div class="rect3"></div>
+							<div class="rect4"></div>
+							<div class="rect5"></div>
+						</div>
+					</div>
+					<div id="tuijianlist"></div>
+					<div id="none2" class="col-md-4 col-md-offset-4 hidden"><p>请输入更准确的查询内容以便推荐哟~^_^</p></div>
+					<button type="button" id="tuijianPrevious" class="btn btn-primary hidden" onclick="tuijianPrevious()">上一页</button>
+					<button type="button" id="tuijianNext" class="btn btn-primary hidden" onclick="tuijianNext()">下一页</button>
+				</div>
 			</div>
+
 			
 		</div>
 	</div>
@@ -104,7 +120,10 @@
 <script>
 var totalPage = 0;
 var currentPage = 1;
+var tuijian_totalPage=0;
+var tuijian_currentPage=1;
 var mainArr = [];
+var tuijianArr=[];
 var sparql = new SPARQLWrapper("http://dbpedia.org/sparql");
 var game = []
 var book = []
@@ -125,6 +144,7 @@ function search(){
 		return;
 	}
 	$("#loading").removeClass("hidden");
+    $("#loading2").removeClass("hidden");
 	var type = $("input[name='layout']:checked").val();
 	var value = "'"+searchValue+"'";
 	var sql = "select distinct ?result ?name where { ?result rdf:type dbo:"+type+"; rdfs:label ?name. filter regex(?name, "+value+")}"
@@ -163,6 +183,102 @@ function search(){
 			});
 		});
 	}
+
+//	sql="select count(?movie) sample(?movie) where{dbr:" +"A_Trip_to_the_Moon"+
+//		" rdf:type ?o."+
+//		"?movie rdf:type ?o." +
+//		"FILTER (?movie !=dbr:" +"A_Trip_to_the_Moon"+
+//		")" +
+//		"}GROUP BY ?movie" +
+//		"ORDER BY DESC(COUNT(?movie))";
+
+//    sql="select distinct ?result ?name where { ?result rdf:type dbo:"+"Book"+"; rdfs:label ?name. filter regex(?name, "+value+")}"
+
+//    sql="select DISTINCT ?name where{dbr:" +"A_Trip_to_the_Moon"+
+//        		" rdf:type ?o."+
+//        		"?name rdf:type ?o." +
+//        		"FILTER (?name !=dbr:" +"A_Trip_to_the_Moon"+
+//        		")}LIMIT 3"
+
+//    select count(?movie) sample(?movie)
+//    where{
+//        dbr:A_Trip_to_the_Moon rdf:type ?o.
+//            ?movie rdf:type ?o.
+//        FILTER (?movie !=dbr:A_Trip_to_the_Moon)
+//    }GROUP BY ?movie ORDER BY DESC(COUNT(?movie))
+//
+//	sql="select DISTINCT ?result ?name ?o\n" +
+//        "where \n" +
+//        "{ ?result dct:subject ?o;rdfs:label ?name.\n" +
+//        "?result rdf:type dbo:Film.\n" +
+//        "dbr:A_Trip_to_the_Moon dct:subject ?o.\n" +
+//        "filter((?result!=dbr:A_Trip_to_the_Moon)&&(lang(?name)='en'))}"
+
+
+
+    var searchContent=searchValue.replace(/ /g,"_")
+	console.log(searchContent)
+//	sql="select DISTINCT ?result ?name ?o\n" +
+//        "where \n" +
+//        "{?result dct:subject ?o;rdfs:label ?name.\n" +
+//        "?result rdf:type dbo:Film.\n" +
+//        "dbr:"+searchContent+ " dct:subject ?o.\n" +
+//        "filter(lang(?name)='en')}"//((?result!=dbr:A_Trip_to_the_Moon)"+" && "+"(lang(?name)='en'))}"
+//
+//	sparql.setQuery(sql)
+//    sparql.query(function(json) {
+//        var temp = JSON.parse(json).results.bindings;
+//        film = temp
+//		book=[]
+//		game=[]
+//        showTuijian(JSON.parse(json).results.bindings, [], [])
+//    })
+
+
+
+    type = "Film"
+    sql = "select DISTINCT ?result ?name ?o\n" +
+        "where \n" +
+        "{?result dct:subject ?o;rdfs:label ?name.\n" +
+        "?result rdf:type dbo:"+type+".\n" +
+        "dbr:"+searchContent+ " dct:subject ?o.\n" +
+        "filter(lang(?name)='en')}"//((?result!=dbr:A_Trip_to_the_Moon)"+" && "+"(lang(?name)='en'))}"
+    sparql.setQuery(sql)
+    sparql.query(function(json){
+        film = JSON.parse(json).results.bindings;
+        type = "Game"
+        sql = "select DISTINCT ?result ?name ?o\n" +
+            "where \n" +
+            "{?result dct:subject ?o;rdfs:label ?name.\n" +
+            "?result rdf:type dbo:"+type+".\n" +
+            "dbr:"+searchContent+ " dct:subject ?o.\n" +
+            "filter(lang(?name)='en')}"//((?result!=dbr:A_Trip_to_the_Moon)"+" && "+"(lang(?name)='en'))}"
+        sparql.setQuery(sql)
+        sparql.query(function(json){
+            game = JSON.parse(json).results.bindings;
+            type = "Book"
+            sql = "select DISTINCT ?result ?name ?o\n" +
+                "where \n" +
+                "{?result dct:subject ?o;rdfs:label ?name.\n" +
+                "?result rdf:type dbo:"+type+".\n" +
+                "dbr:"+searchContent+ " dct:subject ?o.\n" +
+                "filter(lang(?name)='en')}"//((?result!=dbr:A_Trip_to_the_Moon)"+" && "+"(lang(?name)='en'))}"
+            sparql.setQuery(sql)
+            sparql.query(function(json){
+                book = JSON.parse(json).results.bindings;
+                showTuijian(film,book,game);
+            });
+        });
+    });
+
+
+
+
+
+
+
+
+
 }
 function show(film,book,game){
 	$("#loading").addClass("hidden");
@@ -172,6 +288,8 @@ function show(film,book,game){
 		$("#none").removeClass("hidden");
 	}else{
 		$("#result").removeClass("hidden");
+        $("#tuijian").removeClass("hidden");
+        $("#tuijianlist").removeClass("hidden");
 		mainArr = film.concat(book,game)
 		showList(1);
 		showpie();
@@ -185,6 +303,31 @@ function show(film,book,game){
 		}
 	}
 }
+
+function showTuijian(film,book,game){
+    $("#loading2").addClass("hidden");
+    $("#tuijianNext").addClass("hidden");
+    $("#tuijianPrevious").addClass("hidden");
+    $("#tuijianlist").addClass("hidden");
+    if(film.length == 0 && book.length == 0 && game.length == 0){
+        $("#none2").removeClass("hidden");
+    }else{
+        $("#result").removeClass("hidden");
+        $("#tuijian").removeClass("hidden");
+        $("#tuijianlist").removeClass("hidden");
+        tuijianArr = film.concat(book,game)
+        showTuijianList(1);
+        if(tuijianArr.length %10 != 0){
+            tuijian_totalPage = parseInt(tuijianArr.length/10) + 1
+        }else{
+            tuijian_totalPage = parseInt(tuijianArr.length/10);
+        }
+        if(tuijianArr.length > 10){
+            tuijianArr.slice(0,11)
+        }
+    }
+}
+
 function next(){
 	currentPage++;
 	if(currentPage > 1){
@@ -194,6 +337,18 @@ function next(){
 		$("#next").addClass("hidden");
 	}
 	showList(currentPage)
+}
+
+
+function tuijianNext(){
+    tuijian_currentPage++;
+    if(tuijian_currentPage > 1){
+        $("#tuijianPrevious").removeClass("hidden");
+    }
+    if(tuijian_currentPage == tuijian_totalPage){
+        $("#tuijianNext").addClass("hidden");
+    }
+    showTuijianList(tuijian_currentPage)
 }
 
 function previous(){
@@ -206,6 +361,19 @@ function previous(){
 	}
 	showList(currentPage)
 }
+
+
+function tuijianPrevious(){
+    tuijian_currentPage--;
+    if(tuijian_currentPage ==1){
+        $("#tuijianPrevious").addClass("hidden");
+    }
+    if(tuijian_currentPage < tuijian_totalPage){
+        $("#tuijianNext").removeClass("hidden");
+    }
+    showTuijianList(tuijian_currentPage)
+}
+
 
 function showList(page){
 	$("#list").empty();
@@ -223,6 +391,26 @@ function showList(page){
 	}
 	$("#list").append(str);
 }
+
+
+function showTuijianList(page){
+    $("#tuijianlist").empty();
+    var str = []
+    for(var i = (page-1)*10; i < 10*page && i < tuijianArr.length; i++){
+        var desc = "movie";
+        if(i < film.length){
+
+        }else if(i >= film.length && i < (film.length + book.length)){
+            desc = "book"
+        }else{
+            desc = "game"
+        }
+        str = str + "<p><a href='"+tuijianArr[i].result.value+"'>"+"【"+desc+"】"+tuijianArr[i].name.value+"</a></p>"
+    }
+    $("#tuijianlist").append(str);
+
+}
+
 
 function showpie(){
 	var dom = document.getElementById("container");

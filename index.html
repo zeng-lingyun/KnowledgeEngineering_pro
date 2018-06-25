@@ -1,7 +1,8 @@
-﻿﻿<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"> 
 <head> 
-<meta http-equiv="Content-Type" content="text/html; charset=gb2312" /> 
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+	<title>基于DBpedia的出版物检索系统</title>
 <script src="js/SPARQLWrapper.js" type="text/javascript"></script>
 <script src="js/jquery.js" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="css/magic-check.css">
@@ -36,8 +37,29 @@
 
 <body>
 	<div>
-		<div><img src="image/banner.jpg"></div>
-		<div class="row">
+		<style type="text/css">
+			.banner{
+				background:url("image/banner.jpg");
+				background-size: 100% 100%;
+				width:100%;
+			}
+			.tytle{
+				width: 1054px;
+				height: 50px;
+				top: 30px;
+				align-content: center;
+				font-family: Calibri;
+				color: white;
+				font-size: 24px;
+				font-weight: bold;
+				vertical-align: center;
+			}
+		</style>
+		<div class="banner" style="width: 100%;height: 225px">
+			<div style="height: 40px;"></div>
+			<div class="tytle" style="width:100%"><center>基于DBpedia的出版物检索推荐系统</center></div>
+		</div>
+		<div class="row" id="search" style="height:218px;">
 		  <div class="col-md-4 col-md-offset-4">
 		    <div class="input-group">
 		      <input type="text" placeholder="仅支持英文输入 例如：Harry Potter" class="form-control" id="searchValue" aria-label="...">
@@ -46,8 +68,13 @@
 		      </div><!-- /btn-group -->
 		    </div><!-- /input-group -->
 		    <div style="margin-top: 10px">
+
+				<div class="opt">
+					<input class="magic-checkbox" type="radio" name="layout" value="ALL" id="c4" checked="">
+					<label for="c4">不限</label>
+				</div>
 		    	<div class="opt">
-					<input class="magic-checkbox" type="radio" name="layout" value="Film" id="c1" checked="">
+					<input class="magic-checkbox" type="radio" name="layout" value="Film" id="c1" >
 					<label for="c1">电影</label>
 				</div>
 				<div class="opt">
@@ -57,11 +84,7 @@
 				<div class="opt">
 					<input class="magic-checkbox" type="radio" name="layout" value="Game" id="c3">
 					<label for="c3">游戏</label>
-				</div> 
-				<div class="opt">
-					<input class="magic-checkbox" type="radio" name="layout" value="ALL" id="c4">
-					<label for="c4">不限</label>
-				</div> 
+				</div>
 		    </div>
 		  </div><!-- /.col-lg-6 -->
 		</div><!-- /.row -->
@@ -76,7 +99,7 @@
 				  <div class="rect5"></div>
 				</div>
 			</div>
-			<div id="none" class="col-md-4 col-md-offset-4 hidden"><p>无结果</p></div>
+			<div id="none" class="col-md-4 col-md-offset-4 hidden" style="font-size: 16px;height: 100px" ><p>未匹配到结果，请检查关键字是否正确！！</p></div>
 			<div id="result" class="row hidden">
 				<div class="col-md-4 col-md-offset-1  mydiv">
 					<div id="list"></div>
@@ -84,11 +107,12 @@
 					<button type="button" id="next" class="btn btn-primary hidden" onclick="next()">下一页</button>
 				</div>
 				<div id="bing" class="col-md-5 col-md-offset-1  mydiv">
-					<div id="container" style="height:500px">
+					<div id="container" style="height:450px;width: 480px">
+						
 					</div>
 				</div>
 				<div id="tuijian" class="col-md-4 col-md-offset-4 hidden">
-					<p>推荐：</p>
+					<p style="font-weight: bold;font-size: 16px;">猜你喜欢：</p>
 					<div id="loading2" class="col-md-4 col-md-offset-4 hidden">
 						<div class="spinner">
 							<div class="rect1"></div>
@@ -100,14 +124,48 @@
 					</div>
 					<div id="tuijianlist"></div>
 					<div id="none2" class="col-md-4 col-md-offset-4 hidden"><p>请输入更准确的查询内容以便推荐哟~^_^</p></div>
-					<button type="button" id="tuijianPrevious" class="btn btn-primary hidden" onclick="tuijianPrevious()">上一页</button>
-					<button type="button" id="tuijianNext" class="btn btn-primary hidden" onclick="tuijianNext()">下一页</button>
+					<button type="button" id="tuijianPrevious" class="btn btn-primary hidden" onclick="tuijianPrevious()">上一批</button>
+					<button type="button" id="tuijianNext" class="btn btn-primary hidden" onclick="tuijianNext()">换一批</button>
 				</div>
 			</div>
-
 			
 		</div>
 	</div>
+	<!-- 版权信息/S -->
+	<div class="copyright" style="width: 100%">
+		<div class="content layout">
+			<div class="copyright-info" tabindex="0" style="text-align:center;">
+				<p>CopyRight&nbsp;&#169;&nbsp;FQH&nbsp;\&nbsp;ZLY&nbsp;\&nbsp;YH&nbsp;\&nbsp;WX</p>
+			</div>
+		</div>
+	</div>
+	<style type="text/css">
+		.copyright {
+			position:relative;
+			width: 100%;
+			height: 35px;
+			background: #004B97;
+			max-width: 2700px;
+			overflow: hidden;
+			bottom: 0px;
+			margin-top: 10px;
+		}
+		.copyright .content {
+			position: relative;
+			height: 30px;
+			padding-top: 5px;
+		}
+		.copyright .content .copyright-info p {
+			color: white;
+			font-size: 12px;
+			line-height: 26px;
+		}
+		#night-mode .copyright {
+			background: #000;
+			border-top: 1px solid #fff;
+		}
+	</style>
+	<!-- 版权信息/S -->
 <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
 <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
 <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
@@ -128,7 +186,9 @@ var sparql = new SPARQLWrapper("http://dbpedia.org/sparql");
 var game = []
 var book = []
 var film = []
-
+var tuijianFilm=[]
+var tuijianBook=[]
+var tuijianGame=[]
 
 function search(){
 	currentPage = 1;
@@ -137,17 +197,22 @@ function search(){
 	film = []
 	$("#none").addClass("hidden");
 	$("#result").addClass("hidden");
-
+    $("#tuijianNext").addClass("hidden");
+    $("#tuijianPrevious").addClass("hidden");
 	var searchValue = $("#searchValue").val();
 	if(searchValue == ""||searchValue==null){
 		alert("请输入搜索内容")
 		return;
 	}
+    document.getElementById("search").style.height = "30px";
 	$("#loading").removeClass("hidden");
-    $("#loading2").removeClass("hidden");
+	$("#loading2").removeClass("hidden");
+    $("#tuijian").removeClass("hidden");
+	$("#none2").addClass("hidden");
+      $("#tuijianlist").addClass("hidden");
 	var type = $("input[name='layout']:checked").val();
 	var value = "'"+searchValue+"'";
-	var sql = "select distinct ?result ?name where { ?result rdf:type dbo:"+type+"; rdfs:label ?name. filter regex(?name, "+value+")}"
+	var sql = "select distinct ?result ?name where { ?result rdf:type dbo:"+type+"; rdfs:label ?name.filter (lang(?name)='en')  filter regex(?name, "+value+", 'i')}"
 	if(type!='ALL'){
 		sparql.setQuery(sql)
 		sparql.query(function(json){
@@ -160,21 +225,20 @@ function search(){
 				game = temp;
 			}
 			show(JSON.parse(json).results.bindings,[],[])
-
 		});
 	}else{
 		type = "Film"
-		sql = "select distinct ?result ?name where { ?result rdf:type dbo:"+type+"; rdfs:label ?name. filter regex(?name, "+value+")}"
+		sql = "select distinct ?result ?name where { ?result rdf:type dbo:"+type+"; rdfs:label ?name. filter (lang(?name)='en')  filter regex(?name, "+value+", 'i')}"
 		sparql.setQuery(sql)
 		sparql.query(function(json){
 			film = JSON.parse(json).results.bindings;
 			type = "Game"
-			sql = "select distinct ?result ?name where { ?result rdf:type dbo:"+type+"; rdfs:label ?name. filter regex(?name, "+value+")}"
+			sql = "select distinct ?result ?name where { ?result rdf:type dbo:"+type+"; rdfs:label ?name. filter (lang(?name)='en')  filter regex(?name, "+value+", 'i')}"
 			sparql.setQuery(sql)
 			sparql.query(function(json){
 				game = JSON.parse(json).results.bindings;
 				type = "Book"
-				sql = "select distinct ?result ?name where { ?result rdf:type dbo:"+type+"; rdfs:label ?name. filter regex(?name, "+value+")}"
+				sql = "select distinct ?result ?name where { ?result rdf:type dbo:"+type+"; rdfs:label ?name. filter (lang(?name)='en') filter regex(?name, "+value+", 'i')}"
 				sparql.setQuery(sql)
 				sparql.query(function(json){
 					book = JSON.parse(json).results.bindings;
@@ -183,90 +247,40 @@ function search(){
 			});
 		});
 	}
-
-//	sql="select count(?movie) sample(?movie) where{dbr:" +"A_Trip_to_the_Moon"+
-//		" rdf:type ?o."+
-//		"?movie rdf:type ?o." +
-//		"FILTER (?movie !=dbr:" +"A_Trip_to_the_Moon"+
-//		")" +
-//		"}GROUP BY ?movie" +
-//		"ORDER BY DESC(COUNT(?movie))";
-
-//    sql="select distinct ?result ?name where { ?result rdf:type dbo:"+"Book"+"; rdfs:label ?name. filter regex(?name, "+value+")}"
-
-//    sql="select DISTINCT ?name where{dbr:" +"A_Trip_to_the_Moon"+
-//        		" rdf:type ?o."+
-//        		"?name rdf:type ?o." +
-//        		"FILTER (?name !=dbr:" +"A_Trip_to_the_Moon"+
-//        		")}LIMIT 3"
-
-//    select count(?movie) sample(?movie)
-//    where{
-//        dbr:A_Trip_to_the_Moon rdf:type ?o.
-//            ?movie rdf:type ?o.
-//        FILTER (?movie !=dbr:A_Trip_to_the_Moon)
-//    }GROUP BY ?movie ORDER BY DESC(COUNT(?movie))
-//
-//	sql="select DISTINCT ?result ?name ?o\n" +
-//        "where \n" +
-//        "{ ?result dct:subject ?o;rdfs:label ?name.\n" +
-//        "?result rdf:type dbo:Film.\n" +
-//        "dbr:A_Trip_to_the_Moon dct:subject ?o.\n" +
-//        "filter((?result!=dbr:A_Trip_to_the_Moon)&&(lang(?name)='en'))}"
-
-
-
-    var searchContent=searchValue.replace(/ /g,"_")
+	var searchContent=searchValue.replace(/ /g,"_")
 	console.log(searchContent)
-//	sql="select DISTINCT ?result ?name ?o\n" +
-//        "where \n" +
-//        "{?result dct:subject ?o;rdfs:label ?name.\n" +
-//        "?result rdf:type dbo:Film.\n" +
-//        "dbr:"+searchContent+ " dct:subject ?o.\n" +
-//        "filter(lang(?name)='en')}"//((?result!=dbr:A_Trip_to_the_Moon)"+" && "+"(lang(?name)='en'))}"
-//
-//	sparql.setQuery(sql)
-//    sparql.query(function(json) {
-//        var temp = JSON.parse(json).results.bindings;
-//        film = temp
-//		book=[]
-//		game=[]
-//        showTuijian(JSON.parse(json).results.bindings, [], [])
-//    })
-
-
-
-    type = "Film"
+	
+	var tuijianType = "Film"
     sql = "select DISTINCT ?result ?name ?o\n" +
         "where \n" +
         "{?result dct:subject ?o;rdfs:label ?name.\n" +
-        "?result rdf:type dbo:"+type+".\n" +
+        "?result rdf:type dbo:"+tuijianType+".\n" +
         "dbr:"+searchContent+ " dct:subject ?o.\n" +
-        "filter(lang(?name)='en')}"//((?result!=dbr:A_Trip_to_the_Moon)"+" && "+"(lang(?name)='en'))}"
+        "filter(lang(?name)='en')}"
     sparql.setQuery(sql)
     sparql.query(function(json){
-        film = JSON.parse(json).results.bindings;
-        type = "Game"
+        tuijianFilm = JSON.parse(json).results.bindings;
+        tuijianType = "Game"
         sql = "select DISTINCT ?result ?name ?o\n" +
             "where \n" +
             "{?result dct:subject ?o;rdfs:label ?name.\n" +
-            "?result rdf:type dbo:"+type+".\n" +
+            "?result rdf:type dbo:"+tuijianType+".\n" +
             "dbr:"+searchContent+ " dct:subject ?o.\n" +
-            "filter(lang(?name)='en')}"//((?result!=dbr:A_Trip_to_the_Moon)"+" && "+"(lang(?name)='en'))}"
+            "filter(lang(?name)='en')}"
         sparql.setQuery(sql)
         sparql.query(function(json){
-            game = JSON.parse(json).results.bindings;
-            type = "Book"
+            tuijianGame = JSON.parse(json).results.bindings;
+            tuijianType = "Book"
             sql = "select DISTINCT ?result ?name ?o\n" +
                 "where \n" +
                 "{?result dct:subject ?o;rdfs:label ?name.\n" +
-                "?result rdf:type dbo:"+type+".\n" +
+                "?result rdf:type dbo:"+tuijianType+".\n" +
                 "dbr:"+searchContent+ " dct:subject ?o.\n" +
-                "filter(lang(?name)='en')}"//((?result!=dbr:A_Trip_to_the_Moon)"+" && "+"(lang(?name)='en'))}"
+                "filter(lang(?name)='en')}"
             sparql.setQuery(sql)
             sparql.query(function(json){
-                book = JSON.parse(json).results.bindings;
-                showTuijian(film,book,game);
+                tuijianBook = JSON.parse(json).results.bindings;
+                 showTuijian(tuijianFilm,tuijianBook,tuijianGame);
             });
         });
     });
@@ -279,8 +293,6 @@ function show(film,book,game){
 		$("#none").removeClass("hidden");
 	}else{
 		$("#result").removeClass("hidden");
-        $("#tuijian").removeClass("hidden");
-        $("#tuijianlist").removeClass("hidden");
 		mainArr = film.concat(book,game)
 		showList(1);
 		showpie();
@@ -300,13 +312,14 @@ function showTuijian(film,book,game){
     $("#tuijianNext").addClass("hidden");
     $("#tuijianPrevious").addClass("hidden");
     $("#tuijianlist").addClass("hidden");
-    if(film.length == 0 && book.length == 0 && game.length == 0){
+//    $("#none2").addClass("hidden");
+    if(tuijianFilm.length == 0 && tuijianBook.length == 0 && tuijianGame.length == 0){
         $("#none2").removeClass("hidden");
     }else{
         $("#result").removeClass("hidden");
         $("#tuijian").removeClass("hidden");
         $("#tuijianlist").removeClass("hidden");
-        tuijianArr = film.concat(book,game)
+        tuijianArr = tuijianFilm.concat(tuijianBook,tuijianGame)
         showTuijianList(1);
         if(tuijianArr.length %10 != 0){
             tuijian_totalPage = parseInt(tuijianArr.length/10) + 1
@@ -314,7 +327,7 @@ function showTuijian(film,book,game){
             tuijian_totalPage = parseInt(tuijianArr.length/10);
         }
         if(tuijianArr.length > 10){
-            tuijianArr.slice(0,11)
+            $("#tuijianNext").removeClass("hidden");
         }
     }
 }
@@ -330,13 +343,13 @@ function next(){
 	showList(currentPage)
 }
 
-
 function tuijianNext(){
     tuijian_currentPage++;
     if(tuijian_currentPage > 1){
         $("#tuijianPrevious").removeClass("hidden");
     }
     if(tuijian_currentPage == tuijian_totalPage){
+        console.log(tuijian_totalPage)
         $("#tuijianNext").addClass("hidden");
     }
     showTuijianList(tuijian_currentPage)
@@ -353,7 +366,6 @@ function previous(){
 	showList(currentPage)
 }
 
-
 function tuijianPrevious(){
     tuijian_currentPage--;
     if(tuijian_currentPage ==1){
@@ -365,14 +377,12 @@ function tuijianPrevious(){
     showTuijianList(tuijian_currentPage)
 }
 
-
 function showList(page){
 	$("#list").empty();
 	var str = []
 	for(var i = (page-1)*10; i < 10*page && i < mainArr.length; i++){
 		var desc = "movie";
 		if(i < film.length){
-
 		}else if(i >= film.length && i < (film.length + book.length)){
 			desc = "book"
 		}else{
@@ -383,32 +393,29 @@ function showList(page){
 	$("#list").append(str);
 }
 
-
 function showTuijianList(page){
     $("#tuijianlist").empty();
     var str = []
     for(var i = (page-1)*10; i < 10*page && i < tuijianArr.length; i++){
-        var desc = "movie";
-        if(i < film.length){
+        var tuijianDesc = "movie";
+        if(i < tuijianFilm.length){
 
-        }else if(i >= film.length && i < (film.length + book.length)){
-            desc = "book"
+        }else if(i >= tuijianFilm.length && i < (tuijianFilm.length + tuijianBook.length)){
+            tuijianDesc = "book"
         }else{
-            desc = "game"
+            tuijianDesc = "game"
         }
-        str = str + "<p><a href='"+tuijianArr[i].result.value+"'>"+"【"+desc+"】"+tuijianArr[i].name.value+"</a></p>"
+        str = str + "<p><a href='"+tuijianArr[i].result.value+"'>"+"【"+tuijianDesc+"】"+tuijianArr[i].name.value+"</a></p>"
     }
     $("#tuijianlist").append(str);
 
 }
-
 
 function showpie(){
 	var dom = document.getElementById("container");
 	var myChart = echarts.init(dom);
 	var app = {};
 	option = null;
-
 	option = {
 	    title : {
 	        text: '结果统计',
@@ -426,7 +433,6 @@ function showpie(){
 	        top: 20,
 	        bottom: 20,
 	        data: ['movie','book','game'],
-
 	        //selected: data.selected
 	    },
 	    series : [
@@ -450,13 +456,10 @@ function showpie(){
 	        }
 	    ]
 	};
-
 	if (option && typeof option === "object") {
 	    myChart.setOption(option, true);
 	}
 }
-
-
 </script>
 </body> 
 </html> 
